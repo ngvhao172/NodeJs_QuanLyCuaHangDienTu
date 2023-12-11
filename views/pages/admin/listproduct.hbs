@@ -1,0 +1,480 @@
+<div class="container-fluid">
+    <h4 class="fw-bold my-3"><span class="text-muted fw-light">Manager /</span> Products</h4>
+    {{#if messages.message}}
+    <div id="flash-alert" class="alert alert-{{messages.type}} alert-dismissible fade show mt-2" role="alert">
+        <strong>{{messages.type}}!</strong> {{{messages.message}}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {{/if}}
+
+    <div class="card my-3">
+        <div class="card-header bg-primary text-white p-3">
+            <p class="d-inline fs-4">List Product</p>
+
+            <div class="float-end">
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                    data-bs-target="#addProductModal">
+                    <span class="">
+                        <i class="fa fa-plus"></i>
+                        Add new product
+                    </span>
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                    data-bs-target="#addMerchandiseModal">
+                    <span class="">
+                        <i class="fa fa-plus"></i>
+                        Add new merchandise
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <div class="card-body mt-3">
+            <div class="row">
+                <div class="col-md-2">
+                    <input type="text" name="name" id="productName" placeholder="Input ID or name product" class="form-control">
+                </div>
+                <div class="col-md-2">
+                    <select name="price" class="form-select" id="productPrice">
+                        <option value="" disabled selected>Price</option>
+                        <option value="lt5000000">&lt; 5.000.000</option>
+                        <option value="lt10000000">&lt; 10.000.000</option>
+                        <option value="lt30000000">&lt; 30.000.000</option>
+                        <option value="gt30000000">&gt; 30.000.000</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <select name="status" id="status" class="form-select">
+                        <option value="" disabled selected>Status</option>
+                        <option value="stocking">Còn hàng</option>
+                        <option value="out-of-stock">Hết hàng</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="category" id="category" class="form-select">
+                        <option value="" disabled selected>Type of product</option>
+                        <option value="Điện thoại">Điện thoại</option>
+                        <option value="Phụ kiện">Phụ kiện</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" id="dateImport" name="dateImport" placeholder="Input price of product" class="form-control">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-primary btn-block" id="search">Search</button>
+                </div>
+            </div>
+
+            <div class="table-responsive mt-3">
+                <table class="table table-bordered" id="" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Ảnh Sản Phẩm</th>
+                            <th>Mã Sản Phẩm</th>
+                            <th>Tên Sản Phẩm</th>
+                            <th>Giá thấp nhất</th>
+                            <th>Nhà sản xuất</th>
+                            <th>Phân loại</th>
+                            <th>Ngày tạo</th>
+                            <th>Tùy chỉnh</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productTableBody">
+                        {{!-- {{#each products}}
+                        <tr>
+                            <td class="text-center"><img src="{{this.merchandise.imagePath}}" style="max-height:100px"
+                                    alt=""></td>
+                            <td>{{this._id}}</td>
+                            <td> <a href="/admin/products/{{this._id}}">{{this.productName}}</a></td>
+                            <td>{{formatCurrency this.merchandise.retailPrice}}</td>
+                            <td>{{this.manufacturer}}</td>
+                            <td>{{this.category}}</td>
+                            <td>{{this.createdAt}}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                    data-name="{{this.productName}}" data-id="{{this._id}}"
+                                    onclick="openModal($(this).attr('data-name'), $(this).attr('data-id'))"
+                                    data-bs-target="#deleteProductModal">
+                                    <i class="bx bx-trash"></i></button>
+                                <a href="/admin/products/{{this._id}}">
+                                    <button type="button" class=" mt-1 btn btn-warning">
+                                        <i class="bx bxs-receipt"></i></button></a>
+                            </td>
+                        </tr>
+                        {{/each}} --}}
+            
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer small text-muted">Updated at {{formatDatetime updatedAt}}</div>
+    </div>
+
+    <br><br><br>
+    {{!-- Model Thêm Sản phẩm --}}
+    <!-- Modal -->
+    <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addProductModal">Thêm sản phẩm mới
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <form class="form-floating needs-validation" action="products" method="post" novalidate>
+                    <div class="modal-body">
+                        <!-- Form để nhập Tên và Email -->
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" name="productName"
+                                placeholder="iPhone 15" required>
+                            <label for="floatingInput">Tên sản phẩm</label>
+                            <div class="invalid-feedback">Vui lòng nhập tên sản phẩm</div>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingPassword" name="manufacturer"
+                                placeholder="Apple" required>
+                            <label for="floatingPassword">Nhà sản xuất</label>
+                            <div class="invalid-feedback">Vui lòng nhập nhà sản xuất</div>
+                        </div>
+                        <div class="mb-3">
+                            <select id="floatingInput" class="form-select form-select-lg" name="category" required>
+                                <option disabled selected>Phân loại</option>
+                                <option value="Điện thoại">Điện thoại</option>
+                                <option value="Phụ kiện">Phụ kiện</option>
+                            </select>
+                        </div>
+                        <div class="form-floating">
+                            <textarea class="form-control" placeholder="Mô tả sản phẩm" name="description"
+                                id="floatingTextarea2" style="height: 100px"></textarea>
+                            <label for="floatingTextarea2">Mô tả (Tùy chọn)</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="saveProduct">Save</button>
+                        <button type="button" class="btn btn-secondary" id="btnCloseAddProduct"
+                            data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {{!-- Model Thêm Sản phẩm Inner --}}
+    <!-- Modal -->
+    <div class="modal fade" id="addProductModalInner" tabindex="-1" aria-labelledby="addProductModal"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addProductModalInner">Thêm sản phẩm mới
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <form class="form-floating needs-validation" action="/admin/products/addProductInner" method="post"
+                    novalidate>
+                    <div class="modal-body">
+                        <!-- Form để nhập Tên và Email -->
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingInput" name="productName"
+                                placeholder="iPhone 15" required>
+                            <label for="floatingInput">Tên sản phẩm</label>
+                            <div class="invalid-feedback">Vui lòng nhập tên sản phẩm</div>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingPassword" name="manufacturer"
+                                placeholder="Apple" required>
+                            <label for="floatingPassword">Nhà sản xuất</label>
+                            <div class="invalid-feedback">Vui lòng nhập nhà sản xuất</div>
+                        </div>
+                        <div class="mb-3">
+                            <select id="floatingInput" class="form-select form-select-lg" name="category" required>
+                                <option disabled selected>Phân loại</option>
+                                <option value="Điện thoại">Điện thoại</option>
+                                <option value="Phụ kiện">Phụ kiện</option>
+                            </select>
+                        </div>
+                        <div class="form-floating">
+                            <textarea class="form-control" placeholder="Mô tả sản phẩm" name="description"
+                                id="floatingTextarea2" style="height: 100px"></textarea>
+                            <label for="floatingTextarea2">Mô tả (Tùy chọn)</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="saveProduct">Save</button>
+                        <button type="button" class="btn btn-secondary" id="btnCloseAddProductInner"
+                            data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {{!-- Model xóa sản phẩm --}}
+    <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Xóa sản phẩm</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="content"></p>
+                </div>
+                <div class="modal-footer">
+                    <form action="products/deleteProduct" method="post">
+                        <input type="hidden" name="productId" id="productId" value="">
+                        <button type="submit" class="btn btn-danger">Xóa</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{!-- Model Thêm Hàng hóa --}}
+    <!-- Modal -->
+    <div class="modal fade" id="addMerchandiseModal" tabindex="-1" aria-hidden="true"
+        aria-labelledby="addMerchandiseModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addMerchandiseModal">Thêm hàng hóa mới
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <form class="form-floating" id="addMerchandiseForm" method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <!-- Form để nhập Tên và Email -->
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="productIdInput" name="productId" value=" "
+                                placeholder="" disabled>
+                            <label for="productIdInput">Mã Sản Phẩm</label>
+                        </div>
+                        <input type="hidden" name="productId" id="productIdForm">
+                        <div class="row mb-3">
+                            <div class="col-md">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="productNameInput" name="productName"
+                                        placeholder="iPhone 15">
+                                    <label for="productNameInput">Tên Sản Phẩm</label>
+                                    <div id="resultContainer"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-1 d-flex justify-content-center">
+                                <button type="button" id="btnAddProductInner" class="btn btn-transparent"
+                                    data-bs-target="#addProductModalInner" data-bs-toggle="modal">
+                                    <i class="bi bi-plus-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md">
+                                <div class="form-floating mb-3">
+                                    <input type="number" class="form-control" id="floatingInput" name="quantity"
+                                        placeholder="100">
+                                    <label for="floatingInput">Số lượng</label>
+                                </div>
+                            </div>
+                            <div class="col-md">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="floatingInput2" name="color"
+                                        placeholder="Xanh lá">
+                                    <label for="floatingInput2">Màu sắc</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md">
+                                <div class="form-floating mb-3">
+                                    <input type="number" class="form-control" id="floatingInput" name="importPrice"
+                                        placeholder="100.000đ">
+                                    <label for="floatingInput">Giá gốc</label>
+                                </div>
+                            </div>
+                            <div class="col-md">
+                                <div class="form-floating mb-3">
+                                    <input type="number" class="form-control" id="floatingInput2" name="retailPrice"
+                                        placeholder="20.000.000đ">
+                                    <label for="floatingInput2">Giá bán</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="floatingPassword" name="storage"
+                                placeholder="64gb">
+                            <label for="floatingPassword">Dung lượng</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="file" class="form-control" id="image" name="image">
+                            <label for="floatingPassword">File ảnh</label>
+                            <div class="divPreviewImg" id="image-container1">
+                                <image id="tmpMerchandisePicture" alt="ảnh hàng hóa" class="img-fluid mt-3"
+                                    style="max-width: 200px" hidden></image>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="saveMerchandise"
+                            data-bs-dismiss="modal">Save</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{#if messages.innerAdd}}
+<script>
+    $(document).ready(function () {
+        $('#addMerchandiseModal').modal('show');
+        const productName = "{{messages.productName}}";
+        const productId = "{{messages.productId}}";
+        $('#productNameInput').val(productName);
+        $('#productIdInput').val(productId);
+        $('#productIdForm').val(productId);
+        $("#addMerchandiseForm").prop("action", "/admin/products/" + productId);
+    });
+</script>
+{{/if}}
+<script>
+    image.onchange = evt => {
+        const [file] = image.files
+        if (file) {
+            tmpMerchandisePicture.src = URL.createObjectURL(file)
+            $('#tmpMerchandisePicture').prop('hidden', false);
+        }
+        else {
+            $('#tmpMerchandisePicture').prop('hidden', true);
+        }
+    }
+         
+    $(document).ready(function () {
+        loadProductListByFiltering();
+
+        let productList = [];
+
+        loadProductList();
+
+
+        console.log(productList);
+
+        $('#productNameInput').on('input', function () {
+            const searchValue = $(this).val().toLowerCase().trim();
+            if (searchValue.length > 0) {
+                if (productList.length > 0) {
+                    const matchingProducts = productList.filter(product => product.productName.toLowerCase().includes(searchValue));
+                    displayMatchingProducts(matchingProducts);
+                }
+                else {
+                    displayMatchingProducts([]);
+                }
+            }
+            else {
+                const $resultContainer = $('#resultContainer');
+                $resultContainer.empty();
+            }
+        });
+
+
+        function displayMatchingProducts(products) {
+            const $resultContainer = $('#resultContainer');
+            $resultContainer.empty();
+
+            if (products.length > 0) {
+                products.forEach(product => {
+                    const $productItem = $('<div style="background-color:#eceef1">');
+                    $productItem.text(product.productName);
+                    $productItem.click(function () {
+                        $('#productNameInput').val(product.productName);
+                        $('#productIdInput').val(product._id);
+                        $('#productIdForm').val(product._id);
+                        $("#addMerchandiseForm").prop("action", "/admin/products/" + product._id);
+                        $resultContainer.empty();
+                    });
+
+                    $resultContainer.append($productItem);
+                });
+            }
+            else {
+                const $productItem = $('<div style="background-color:#eceef1">');
+                $productItem.text("Không có sản phẩm nào");
+                $resultContainer.append($productItem);
+            }
+        }
+
+        function loadProductList() {
+            $.ajax({
+                url: '/admin/api/products/getAllProducts',
+                type: 'GET',
+                success: function (data) {
+                    productList = data;
+                    //updateProductList(data);
+                },
+                error: function (err) {
+                    console.error(err);
+                }
+            });
+        }
+
+        $('#btnAddProductInner').on('click', function () {
+            $('#addMerchandiseModal').modal('hide');
+        });
+        /* {{!-- $('#saveProduct').on('click', function () {
+             $('#addMerchandiseModal').modal('show');
+         }); --}}*/
+        $('#btnCloseAddProductInner').on('click', function () {
+            $('#addMerchandiseModal').modal('show');
+        });
+    });
+    function openModal(value, id) {
+        $("#productId").val(id);
+        $("#content").html("Bạn có chắc muốn xóa sản phẩm <strong>" + value + "</strong>?");
+    }
+
+    function loadProductListByFiltering() {
+        $.ajax({
+            url: '/admin/api/products',
+            type: 'POST',
+            dataType: "json",
+            data: {
+                "name" : $("#productName").val(),
+                "price" : $("#productPrice").val(),
+                "status" : $("#status").val(),
+                "dateImport" : $("#dateImport").val(),
+                "category" : $("#category").val()
+            },
+            success: function (data) {
+                console.log(data)
+                updateProductList(data);
+            },
+            error: function (err) {
+                console.error(err);
+            }
+        });
+    }
+    function formatCurrency(number) {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(number);
+    }
+    function updateProductList(products) {
+        $('#productTableBody').empty();
+        products.forEach(function(product) {
+            var row = $('<tr>');
+            row.append($('<td>').addClass('text-center').html('<img src="' + (product.merchandise ? product.merchandise.imagePath : "") + '" style="max-height:100px" alt="">'));
+            row.append($('<td>').text(product._id));
+            row.append($('<td>').html('<a href="/admin/products/' + product._id + '">' + product.productName + '</a>'));
+            row.append($('<td>').text((product.merchandise ? formatCurrency(product.merchandise.retailPrice) : "") ));
+            row.append($('<td>').text(product.manufacturer));
+            row.append($('<td>').text(product.category));
+            row.append($('<td>').text(product.createdAt));
+            row.append($('<td>').html('<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-name="' + product.productName + '" data-id="' + product._id + '" onclick="openModal($(this).attr(\'data-name\'), $(this).attr(\'data-id\'))" data-bs-target="#deleteProductModal"><i class="bx bx-trash"></i></button><a href="/admin/products/' + product._id + '"><button type="button" class=" mt-1 btn btn-warning"><i class="bx bxs-receipt"></i></button></a>'));
+            $('#productTableBody').append(row);
+        });
+    }
+    $("#search").on("click", function(){
+        loadProductListByFiltering();
+    })
+
+</script>

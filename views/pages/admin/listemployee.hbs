@@ -1,0 +1,242 @@
+<div class="container-fluid">
+    <h4 class="fw-bold my-3"><span class="text-muted fw-light">Manager /</span> Employees</h4>
+
+    {{#if messages.message}}
+    <div id="flash-alert" class="alert alert-{{messages.type}} alert-dismissible fade show mt-2" role="alert">
+        <strong>{{messages.type}}!</strong> {{{messages.message}}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {{/if}}
+
+    <!-- Page Content -->
+    <!-- DataTables Example -->
+    <div class="card my-3">
+        <div class="card-header bg-primary text-white fs-4 p-3">
+            List Employee
+            <a href="#" class="text-white float-end" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
+                <button type="button" class="btn btn-secondary">
+                    <span class="">
+                        Add new employee
+                    </span>
+                </button>
+            </a>
+        </div>
+
+        {{!-- Modal Thêm Nhân Viên --}}
+        <!-- Modal -->
+        <div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModal"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add new employee/ Resend the verification link
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        </button>
+                    </div>
+                    <form id="employeeForm" action="/admin/employees" method="post">
+                        <div class="modal-body">
+                            <!-- Form để nhập Tên và Email -->
+                            <div class="form-group">
+                                <label for="employeeName">Name:</label>
+                                <p style="font-size: 15px; color:brown">(Tùy chọn trong trường hợp xác thực lại
+                                    email)
+                                </p>
+                                <input type="text" class="form-control" name="username" id="employeeName">
+                            </div>
+                            <div class="form-group">
+                                <label for="employeeEmail">Email:</label>
+                                <input type="email" class="form-control" name="useremail" id="employeeEmail">
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" id="saveEmployee">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <input type="text" placeholder="Input ID or name employee" id="name" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <select name="status" id="status" class="form-select">
+                        <option value="" disabled selected>Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-primary btn-block" id="search">Search</button>
+                </div>
+            </div>
+
+            <div class="table-responsive mt-3">
+                <table class="table table-bordered" id="" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Avatar</th>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Gender</th>
+                            <th>Email</th>
+                            <th>Address</th>
+                            <th>Phone number</th>
+                            <th>Status (NOT VERIFIED)</th>
+                            <th>LOCK</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeesTableBody">
+                        {{!-- {{#each employees}}
+                        <tr>
+                            <td class="text-center"><img src="{{this.user.avatar}}" style="max-height:100px" alt="">
+                            </td>
+                            <td>{{this.user._id}}</td>
+                            <td>
+                                <a href="/admin/employees/aboutemployee/{{this.user._id}}">{{this.user.fullName}}</a>
+                            </td>
+                            <td>{{this.user.gender}}</td>
+                            <td>{{this.user.userEmail}}</td>
+                            <td>{{this.user.address}}</td>
+                            <td>{{this.user.phoneNumber}}</td>
+                            {{#compareStringValue this.account.verified true '=='}}
+                            <td class="text-success">Active</td>
+                            {{else}}
+                            <td class="text-danger">Inactive</td>
+                            {{/compareStringValue}}
+                            {{#compareStringValue this.account.enabled true '=='}}
+                            <td><button type="button" class="btn btn-danger" data-bs-target="#lockAccountEmployee"
+                                    data-bs-toggle="modal" data-name="{{this.user.userEmail}}"
+                                    data-id="{{this.user._id}}"
+                                    onclick="openModal($(this).attr('data-name'), $(this).attr('data-id'))">
+                                    <i class="bx bx-lock-alt"></i></button></td>
+                            {{else}}
+                            <td><button type="button" class="btn btn-success" data-bs-target="#unlockAccountEmployee"
+                                    data-bs-toggle="modal" data-name="{{this.user.userEmail}}"
+                                    data-id="{{this.user._id}}"
+                                    onclick="openModal2($(this).attr('data-name'), $(this).attr('data-id'))">
+                                    <i class="bx bx-lock-open"></i></button></td>
+                            {{/compareStringValue}}
+                        </tr>
+                        {{/each}} --}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer small text-muted">Updated at {{formatDatetime updatedAt}}</div>
+    </div>
+
+    <br><br><br>
+    {{!-- Modal khóa account nhân viên --}}
+    <div class="modal fade" id="lockAccountEmployee" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="lockAccountEmployee">Khóa tài khoản</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="content"></p>
+                </div>
+                <div class="modal-footer">
+                    <form action="/admin/userAccount/lock" method="post">
+                        <input type="hidden" name="userId" id="userId" value="">
+                        <button type="submit" class="btn btn-danger">Khóa</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{!-- Modal mở khóa account nhân viên --}}
+    <div class="modal fade" id="unlockAccountEmployee" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="unlockAccountEmployee">Mở khóa tài khoản</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="content2"></p>
+                </div>
+                <div class="modal-footer">
+                    <form action="/admin/userAccount/unlock" method="post">
+                        <input type="hidden" name="userId" id="userId2" value="">
+                        <button type="submit" class="btn btn-danger">Mở khóa</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(email, id) {
+        $("#userId").val(id);
+        $("#content").html("Bạn có chắc muốn khóa tài khoản <strong>" + email + "</strong>?");
+    }
+    function openModal2(email, id) {
+        $("#userId2").val(id);
+        $("#content2").html("Bạn có chắc muốn mở khóa tài khoản <strong>" + email + "</strong>?");
+    }
+    $(document).ready(function () {
+        loadEmployeeListByFiltering();
+    });
+
+    function loadEmployeeListByFiltering() {
+        $.ajax({
+            url: '/admin/api/employees',
+            type: 'POST',
+            dataType: "json",
+            data: {
+                "name": $("#name").val(),
+                "status": $("#status").val(),
+            },
+            success: function (data) {
+                renderEmployeeList(data);
+            },
+            error: function (err) {
+                console.error(err);
+            }
+        });
+    }
+    function renderEmployeeList(employees) {
+        $('#employeesTableBody').empty();
+
+        $.each(employees, function (index, employee) {
+            console.log(employee)
+            var row = $('<tr></tr>');
+            row.append('<td class="text-center"><img src="' + employee.user.avatar + '" style="max-height:100px" alt=""></td>');
+            row.append('<td>' + employee.user._id + '</td>');
+            row.append('<td><a href="/admin/employees/aboutemployee/' + employee.user._id + '">' + employee.user.fullName + '</a></td>');
+            row.append('<td>' + (employee.user.gender || "") + '</td>');
+            row.append('<td>' + employee.user.userEmail + '</td>');
+            row.append('<td>' + (employee.user.address || "") + '</td>');
+            row.append('<td>' + (employee.user.phoneNumber || "") + '</td>');
+
+            if (employee.account.verified) {
+                row.append('<td class="text-success">Active</td>');
+            } else {
+                row.append('<td class="text-danger">Inactive</td>');
+            }
+
+            if (employee.account.enabled) {
+                row.append('<td><button type="button" class="btn btn-danger" data-bs-target="#lockAccountEmployee" data-bs-toggle="modal" data-name="' + employee.user.userEmail + '" data-id="' + employee.user._id + '" onclick="openModal($(this).attr(\'data-name\'), $(this).attr(\'data-id\'))"><i class="bx bx-lock-alt"></i></button></td>');
+            } else {
+                row.append('<td><button type="button" class="btn btn-success" data-bs-target="#unlockAccountEmployee" data-bs-toggle="modal" data-name="' + employee.user.userEmail + '" data-id="' + employee.user._id + '" onclick="openModal2($(this).attr(\'data-name\'), $(this).attr(\'data-id\'))"><i class="bx bx-lock-open"></i></button></td>');
+            }
+            $('#employeesTableBody').append(row);
+        });
+    }
+    $("#search").on("click", function () {
+        loadEmployeeListByFiltering();
+    })
+</script>

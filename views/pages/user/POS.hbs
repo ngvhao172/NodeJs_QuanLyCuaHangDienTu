@@ -1,0 +1,641 @@
+<script src="https://cdn.rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
+<style>
+    img {
+        width: 80px;
+    }
+
+    .dataTables_info {
+        display: none;
+    }
+
+    /* Add your custom table styles here */
+    .custom-table {
+        width: 100%;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .table-responsive::-webkit-scrollbar {
+        display: none;
+    }
+
+    .custom-table th,
+    .custom-table td {
+
+        text-align: center;
+        border: none;
+    }
+
+    .custom-table th {
+        background-color: #f2f2f2;
+    }
+
+    .custom-table img {
+        width: 80px;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .custom-table td:hover {
+        background-color: #f5f5f5;
+
+    }
+
+    #search-results {
+        list-style-type: none;
+        margin-left: 110px;
+        margin-right: 100px;
+    }
+
+    .result-item {
+        padding: 5px;
+        cursor: pointer;
+    }
+
+    .result-item:hover {
+        background-color: #e0e0e0;
+    }
+</style>
+
+<div class="container-fluid" style="height: 100%;">
+
+    <!-- Breadcrumbs -->
+    {{!-- <h4 class="fw-bold m-3"><a href="POS"><span class="text-muted fw-light">POS</span></a></h4> --}}
+    <!-- Page Content -->
+    {{#if messages.message}}
+    <div id="flash-alert" class="alert alert-{{messages.type}} alert-dismissible fade show mt-2" role="alert">
+        <strong>{{messages.type}}!</strong> {{{messages.message}}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {{/if}}
+    <div class="mt-2 row" style="height: 95%;">
+        <div class="col-md-8">
+            <div class="row d-flex align-items-start flex-column" style="height: 100%;">
+                <div class="col-12 mb-auto">
+                    <div class="table-responsive mb-auto">
+                        <div class="custom-table-wrapper" id="cart-items" style="max-height: 380px; overflow-y: auto;">
+                            <table class="table table-striped table-bordered bg-white" id="selectedTable">
+                                <thead>
+                                    <th>Product No.</th>
+                                    <th>Name Product</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total Amount</th>
+                                    <th></th>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="my-4 mt-auto">
+                        <div class="row alert alert-primary p-2 my-2">
+                            Type the product code or name in the search box to add items to the order
+                        </div>
+                        <div class="row my-2">
+                            <div class="col-md-5">
+                                <input type="text" id="productSearchInput" placeholder="Input barcode or name product"
+                                    class="form-control">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-primary btn-block">Search</button>
+                            </div>
+                        </div>
+                        <ul class="list-group list-group-horizontal position-relative overflow-auto"
+                            id="listOfProducts">
+                            {{!-- Danh sách sản phẩm ở đây --}}
+                            {{#each merchandises}}
+                            <li class="list-group-item">
+                                <div class="card h-100 text-center" style="width: 115px">
+                                    <img src="{{this.imagePath}}" alt="Ảnh sản phẩm"
+                                        class="img-product img-fluid d-flex mx-auto mt-2">
+                                    <div class="card-body p-1">
+                                        <h5 class="card-title" style="min-height:40px">{{this.product.productName}}</h5>
+                                        <p class="card-text">Price: {{formatCurrency this.retailPrice}}</p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <button class="btn btn-success add-to-cart" data-productid="{{this._id}}"
+                                            data-price="{{this.retailPrice}}" data-name="{{this.product.productName}}"
+                                            data-image="{{this.imagePath}}" onclick="addToCart(this)"><i
+                                                class="bx bxs-cart-add"></i></button>
+                                    </div>
+                                </div>
+                            </li>
+                            {{/each}}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 p-3 bg-white border border-1 rounded">
+            <form id="formBill" action="/user/addInvoice" method="post">
+                <div class="form-group row">
+                    <label for="tenKH" class="col-sm-3 col-form-label"><b>Customer</b></label>
+                    <div class="col-sm-7">
+                        <input type="hidden" name="customerId" id="customerId">
+                        <input type="text" class="form-control" name="customername" id="search-input"
+                            placeholder="Input phone number or customer name">
+                        <div id="customersContainer"></div>
+                    </div>
+                    <a href="#" class="text-white float-end col-sm-1 p-0" data-bs-toggle="modal"
+                        data-bs-target="#addCustomer">
+                        <button type="button" class="btn btn-primary p-2">
+                            <i class="menu-icon tf-icons bx bxs-plus-square"></i>
+                        </button>
+                    </a>
+                </div>
+                <ul id="search-results"></ul>
+                <div class="form-group row">
+                    <label for="slNV" class="col-sm-3 col-form-label"><b>Cashier</b></label>
+                    <div class="col-sm-7">{{user.fullName}}</div>
+                    <input type="hidden" name="cashierId" value="{{user._id}}">
+                    {{!-- <div class="col-sm-7">
+                        <select class="form-control" id="slNV">
+                            <!-- Add your options here -->
+                            <option value="option">--</option>
+                            <option value="option1">Option 1</option>
+                            <option value="option2">Option 2</option>
+                            <option value="option3">Option 3</option>
+                            <!-- Add more options as needed -->
+                        </select>
+                    </div> --}}
+                </div>
+                <div class="form-group mt-2 row">
+                    <label class="col-sm-3 col-form-label" for="note"><b>Ghi chú</b></label>
+                    <div class="col-sm-7">
+                        <textarea class="form-control" name="note" id="note" rows="3"></textarea>
+                    </div>
+                </div>
+                <h2><i class="fas fa-circle-info"></i>&#x000A;Payment</h2>
+                <div class="form-group row">
+                    <label for="method" class="col-sm-3 col-form-label"><b>Method</b></label>
+                    <div class="col-sm-7">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="method" id="cash" value="Cash" checked>
+                            <label class="form-check-label" for="radio">
+                                Cash
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="method" id="momo" value="MOMO">
+                            <label class="form-check-label" for="radio">
+                                Momo
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="tienhang" class="col-sm-3 col-form-label"><b>Subtotal</b></label>
+                    <div class="col-sm-7">
+                        <span id="total-price">0</span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="giamgia" class="col-sm-3 col-form-label"><b>Discount</b></label>
+                    <div class="col-sm-7">
+                        <input type="text" class="form-control text-right" name="discount" id="discount"
+                            placeholder="0">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="tongcong" class="col-sm-3 col-form-label"><b>Total</b></label>
+                    <div class="col-sm-7">
+                        <input type="hidden" name="totalAfterDiscount" id="totalValueInput">
+                        <input type="hidden" name="totalBill" id="totalBill">
+                        <span id="price">0</span>
+                    </div>
+                </div>
+                <div class="form-group row" id="receiveDiv">
+                    <label for="khachdua" class="col-sm-3 col-form-label"><b>Receive</b></label>
+                    <div class="col-sm-7">
+                        <input type="text" class="form-control text-right" name="totalReceive" id="receive"
+                            placeholder="0">
+                    </div>
+                </div>
+                <div class="form-group row" id="refundDiv">
+                    <label for="conno" class="col-sm-3 col-form-label"><b>Refund</b></label>
+                    <div class="col-sm-7">
+                        <input type="hidden" name="totalRefund" id="totalRefundValue">
+                        <span id="refund">0</span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-3"></div>
+                    <div class="col text-right">
+                        <button type="button" class="btn btn-primary" id="saveBill">
+                            <span>
+                                <i class="fa-solid fa-check"></i>&#x000A;Save
+                            </span>
+                        </button>
+                        <button class="btn btn-primary">
+                            <span><i class="fa-solid fa-print"></i>&#x000A;Save and Print
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <div id="qr-reader" class="mt-2" style="width: 100%">
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal fade" id="addCustomer" tabindex="-1" aria-labelledby="logoutModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-white" id="exampleModalLabel">
+                    Add new customer
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            </div>
+            <form class="form-floating" id="addCustomerForm" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-floating mb-3">
+                        <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" placeholder=""
+                            required>
+                        <label for="phoneInput">Phone number</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="fullName" name="fullName" placeholder="" required>
+                        <label for="">Name</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="address" name="address" placeholder="" required>
+                        <label for="">Address</label>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" id="saveCustomer">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        var cartItems = [];
+
+        var total = 0;
+        var finalprice = 0;
+        var discountInput = $('#discount').val();
+        var receiveInput = $('#receive').val();
+
+        function addToCart(button) {
+            var productId = $(button).data('productid');
+            var price = $(button).data('price');
+            var name = $(button).data('name');
+            const cartItemsSession = JSON.parse(sessionStorage.getItem("cartItems"));
+            cartItems = cartItemsSession ? cartItemsSession : [];
+
+            var index = cartItems.findIndex(function (item) {
+                return item.productId === productId;
+            });
+            if (index !== -1) {
+                // Sản phẩm đã tồn tại trong giỏ hàng, cập nhật số lượng
+                cartItems[index].quantity++;
+            } else {
+                // Sản phẩm chưa tồn tại trong giỏ hàng, thêm sản phẩm mới
+                cartItems.push({
+                    productId: productId,
+                    name: name,
+                    quantity: 1,
+                    price: price
+                });
+            }
+            sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
+            updateCartTable();
+            calculateTotalPrice(); // Cập nhật bảng giỏ hàng
+        }
+        $(document).ready(function () {
+            const cartItemsSession = JSON.parse(sessionStorage.getItem("cartItems"));
+            cartItems = cartItemsSession ? cartItemsSession : [];
+            updateCartTable();
+            calculateTotalPrice();
+            $("#momo").change(function () {
+                if ($(this).prop("checked")) {
+                    $("#refundDiv").hide();
+                    $("#receiveDiv").hide();
+                }
+            });
+            $("#cash").change(function () {
+                if ($(this).prop("checked")) {
+                    $("#refundDiv").show();
+                    $("#receiveDiv").show();
+                }
+            });
+        });
+
+        $("#saveBill").on("click", function () {
+            for (var i = 0; i < cartItems.length; i++) {
+                const item = $("<input type='hidden' name='productsOnBill[]'>");
+                item.val(JSON.stringify(cartItems[i]));
+                //console.log(cartItems[i]);
+                $("#formBill").append(item);
+            }
+            $("#formBill").submit();
+        })
+        function calculateTotalPrice() {
+            var totalPrice = 0;
+            for (var i = 0; i < cartItems.length; i++) {
+                var item = cartItems[i];
+                totalPrice += item.quantity * item.price;
+            }
+            $('#total-price').text(formatCurrency(totalPrice));
+            $('#totalBill').val(totalPrice);
+            var discountValue = $("#discount").val();
+            var receiveValue = $("#receive").val();
+            $('#price').text(formatCurrency(totalPrice - discountValue));
+            $("#totalValueInput").val(totalPrice - discountValue)
+            $('#refund').text(formatCurrency(receiveValue - $("#totalValueInput").val()));
+            total = totalPrice;
+        }
+        $("#discount").on('input', function () {
+            var discountValue = $("#discount").val();
+            var discount = 0;
+            var receiveValue = $("#receive").val();
+            var receive = 0;
+            if (!isNaN(receiveValue)) {
+                receive = receiveValue;
+            }
+            if (!isNaN(discountValue)) {
+                discount = discountValue;
+            }
+            //Total = subtotal - discount 
+            var totalPrice = total - discount;
+            $("#price").text(formatCurrency(totalPrice));
+            $("#totalValueInput").val(totalPrice)
+            $("#refund").text(formatCurrency(receive - totalPrice));
+        })
+        $("#receive").on('input', function () {
+            var receiveValue = $("#receive").val();
+            var totalPrice = parseFloat($("#totalValueInput").val());
+            var total = 0;
+            if (!isNaN(totalPrice)) {
+                total = totalPrice;
+            }
+            var receive = 0;
+            if (!isNaN(receiveValue)) {
+                receive = receiveValue;
+            }
+            //Refund = receive - (total - discount already)
+            var refundPrice = receive - total;
+            $("#refund").text(formatCurrency(refundPrice));
+            $("#totalRefundValue").val(refundPrice)
+        })
+        // Function to update the cart table
+        function updateCartTable() {
+            var cartTable = $('#cart-items tbody'); // Get the cart table body
+            // Clear the table body
+            cartTable.empty();
+            for (var i = 0; i < cartItems.length; i++) {
+                var item = cartItems[i];
+                // Calculate the total price for the item
+                var totalPrice = item.quantity * item.price;
+
+                // Create a new row for the item
+                //console.log(item)
+                var row = $('<tr>').prop("id", item.productId);
+                row.append($('<td class="text-center">').text(i + 1));
+                row.append($('<td>').text(item.name));
+                var input = $('<input>').attr('type', 'number').addClass('form-control text-center quantity-input').val(item.quantity).css('width', '100px');;
+                row.append($('<td>').append(input));
+                row.append($('<td>').text(formatCurrency((item.price))));
+                row.append($('<td>').text(formatCurrency((totalPrice))));
+
+                var deleteButton = $('<button type="button" class="btn btn-danger delete-item"><i class="bx bxs-trash"></i></button>');
+                //deleteButton.data('productid', item.productId);
+                row.append($('<td>').html(deleteButton));
+                cartTable.append(row);
+
+            }
+            $('.delete-item').on('click', function () {
+                var productId = $(this).closest('tr').prop('id');
+                removeCartItem(productId);
+            });
+        };
+
+        function removeCartItem(productId) {
+            const cartItemsSession = JSON.parse(sessionStorage.getItem("cartItems"));
+            cartItems = cartItemsSession ? cartItemsSession : [];
+            const index = cartItems.findIndex(function (item) {
+                return item.productId === productId;
+            });
+            console.log(index);
+            if (index !== -1) {
+                cartItems.splice(index, 1);
+
+                console.log(cartItems);
+                sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
+                updateCartTable();
+                calculateTotalPrice();
+            }
+        };
+
+        $(document).on('change', '.quantity-input', function () {
+            const productId = $(this).closest('tr').attr("id");
+            const newQuantity = parseInt($(this).val());
+            if (newQuantity < 1) {
+                alert("Sản phẩm đã đạt quá giới hạn số lượng");
+                $(this).val(1);
+                newQuantity = 1;
+            }
+            updateCartItemQuantity(productId, newQuantity);
+        });
+
+        function updateCartItemQuantity(productId, newQuantity) {
+            const index = cartItems.findIndex(function (item) {
+                return item.productId === productId;
+            });
+            if (index !== -1) {
+                cartItems[index].quantity = newQuantity;
+                sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
+                updateCartTable();
+                calculateTotalPrice();
+            }
+        }
+        //Add mới customer
+        $("#saveCustomer").on("click", function () {
+            const fullName = $("#fullName").val();
+            const phoneNumber = $("#phoneNumber").val();
+            const address = $("#address").val();
+            $.ajax({
+                url: '/user/api/customers/addNewCustomer',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    fullName: fullName,
+                    phoneNumber: phoneNumber,
+                    address: address
+                }),
+                success: function (data) {
+                    if (data.success) {
+                        //gán lại giá trị vào input
+                        $("#search-input").val(data.data.fullName);
+                        $("#customerId").val(data.data._id);
+                    }
+                },
+                error: function (err) {
+                    alert(err.responseJSON.message);
+                }
+            });
+        });
+        let customerList = [];
+        function loadCustomerList() {
+            $.ajax({
+                url: '/user/api/customers/getAllCustomers',
+                type: 'GET',
+                success: function (data) {
+                    customerList = data.customers;
+                    //console.log(customerList)
+                },
+                error: function (err) {
+                    alert(err.message);
+                }
+            });
+        }
+        loadCustomerList()
+        $("#search-input").on("input", function () {
+            const searchValue = $(this).val().toLowerCase().trim();
+            if (searchValue.length > 0) {
+                if (customerList.length > 0) {
+                    const matchingCustomers = customerList.filter(customer =>
+                        customer.fullName.toLowerCase().includes(searchValue) || customer.phoneNumber.toLowerCase().includes(searchValue)
+                    );
+                    displayMatchingCustomers(matchingCustomers);
+                }
+                else {
+                    displayMatchingCustomers([]);
+                }
+            }
+            else {
+                const $customersContainer = $("#customersContainer");
+                $customersContainer.empty();
+            }
+        })
+        function displayMatchingCustomers(customers) {
+            const $customersContainer = $("#customersContainer");
+            $customersContainer.empty();
+            //console.log(customers.length)
+            if (customers.length > 0) {
+                customers.forEach(customer => {
+                    const $customerName = $('<div style="background-color:#eceef1" class="mb-1">');
+                    $customerName.text(customer.fullName);
+                    const $customerPhoneNumber = $('</br><span> ');
+                    $customerPhoneNumber.text(customer.phoneNumber);
+                    $customerName.append($customerPhoneNumber);
+                    $customerName.click(function () {
+                        $('#search-input').val(customer.fullName);
+                        $("#customerId").val(customer._id);
+                        $customersContainer.empty();
+                    });
+
+                    $customersContainer.append($customerName);
+                });
+            }
+            else {
+                const $customerName = $('<div style="background-color:#eceef1">');
+                $customerName.text("Không có khách hàng nào");
+                $customersContainer.append($customerName);
+            }
+        }
+        function formatCurrency(number) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(number);
+        }
+        let productList = []
+        function loadProductList() {
+            $.ajax({
+                url: '/user/api/merchandises/GetAllMerchandises',
+                type: 'GET',
+                success: function (data) {
+                    productList = data.data;
+                },
+                error: function (err) {
+                    console.error(err);
+                }
+            });
+        }
+        loadProductList();
+        $("#productSearchInput").on("input", function () {
+            const searchValue = $(this).val().toLowerCase().trim();
+            if (searchValue.length > 0) {
+                if (productList.length > 0) {
+                    const matchingProducts = productList.filter(product => product.product.productName.toLowerCase().includes(searchValue) || product._id.toLowerCase().includes(searchValue));
+                    displayMatchingProducts(matchingProducts);
+                }
+                else {
+                    displayMatchingProducts([]);
+                }
+            }
+            else {
+                displayMatchingProducts(productList);
+            }
+        })
+        function displayMatchingProducts(products) {
+            const listOfProducts = $("#listOfProducts");
+            listOfProducts.empty();
+
+            if (products.length > 0) {
+                products.forEach(product => {
+                    const $productItem = $(`
+                <li class="list-group-item">
+                <div class="card h-100 text-center" style="width: 115px">
+                    <img src="${product.imagePath}" alt="Ảnh sản phẩm" class="img-product img-fluid d-flex mx-auto mt-2">
+                    <div class="card-body p-1">
+                    <h5 class="card-title" style="min-height: 40px">${product.product.productName}</h5>
+                    <p class="card-text">Price: ${formatCurrency(product.retailPrice)}</p>
+                    </div>
+                    <div class="card-footer">
+                    <button class="btn btn-success add-to-cart" data-productid="${product._id}" data-price="${product.retailPrice}" data-name="${product.product.productName}" data-image="${product.imagePath}" onclick=addToCart(this)>
+                        <i class="bx bxs-cart-add"></i>
+                    </button>
+                    </div>
+                </div>
+                </li>
+            `);
+                    listOfProducts.append($productItem);
+                });
+            }
+            else {
+                const $productItem = $('<div style="background-color:#eceef1">');
+                $productItem.text("Không có sản phẩm nào");
+                listOfProducts.append($productItem);
+            }
+
+        }
+        function onScanSuccess(qrCodeMessage) {
+            const decimal = parseInt(qrCodeMessage)
+            const hexValue = decimal.toString(16);
+            productList.forEach(product => {
+                const last8id = product._id.slice(-8)
+                if (last8id == hexValue) {
+
+                    var addButton = $(`
+                <button class="btn btn-success add-to-cart"
+                        data-productid="${product._id}"
+                        data-price="${product.retailPrice}"
+                        data-name="${product.product.productName}"
+                        data-image="${product.imagePath}"
+                        onclick="addToCart(this)">
+                    <i class="bx bxs-cart-add"></i>
+                </button>
+            `);
+
+                    addButton.click();
+                }
+            })
+            console.log(`QR Code scanned: ${decimal.toString(16)}`);
+        }
+        var html5QrcodeScanner = new Html5QrcodeScanner(
+            "qr-reader", { fps: 2, qrbox: 250 }); // 5s quet 1 lan o fps 0.2
+
+        html5QrcodeScanner.render(onScanSuccess);
+    </script>
+    <script>
+
+    </script>

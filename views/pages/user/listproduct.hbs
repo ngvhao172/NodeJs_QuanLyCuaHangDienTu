@@ -1,0 +1,140 @@
+<div class="container-fluid">
+    <h4 class="fw-bold my-3"><span class="text-muted fw-light">Manager /</span> Products</h4>
+    {{#if messages.message}}
+    <div id="flash-alert" class="alert alert-{{messages.type}} alert-dismissible fade show mt-2" role="alert">
+        <strong>{{messages.type}}!</strong> {{{messages.message}}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {{/if}}
+
+    <div class="card my-3">
+        <div class="card-header bg-primary text-white fs-4 p-3">
+            <p class="d-inline">List Product</p>
+        </div>
+
+        <div class="card-body mt-3">
+            <div class="row">
+                <div class="col-md-2">
+                    <input type="text" name="name" id="productName" placeholder="Input ID or name product" class="form-control">
+                </div>
+                <div class="col-md-2">
+                    <select name="price" class="form-select" id="productPrice">
+                        <option value="" disabled selected>Price</option>
+                        <option value="lt5000000">&lt; 5.000.000</option>
+                        <option value="lt10000000">&lt; 10.000.000</option>
+                        <option value="lt30000000">&lt; 30.000.000</option>
+                        <option value="gt30000000">&gt; 30.000.000</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <select name="status" id="status" class="form-select">
+                        <option value="" disabled selected>Status</option>
+                        <option value="stocking">Còn hàng</option>
+                        <option value="out-of-stock">Hết hàng</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="category" id="category" class="form-select">
+                        <option value="" disabled selected>Type of product</option>
+                        <option value="Điện thoại">Điện thoại</option>
+                        <option value="Phụ kiện">Phụ kiện</option>
+                    </select>
+                </div>
+                {{!-- <div class="col-md-2">
+                    <input type="date" id="dateImport" name="dateImport" placeholder="Input price of product" class="form-control">
+                </div> --}}
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-primary btn-block" id="search">Search</button>
+                </div>
+            </div>
+
+            <div class="table-responsive mt-3">
+                <table class="table table-bordered" id="" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Ảnh Sản Phẩm</th>
+                            <th>Mã Sản Phẩm</th>
+                            <th>Tên Sản Phẩm</th>
+                            <th>Giá thấp nhất</th>
+                            <th>Nhà sản xuất</th>
+                            <th>Phân loại</th>
+                            {{!-- <th>Ngày tạo</th> --}}
+                            {{!-- <th>Tùy chỉnh</th> --}}
+                        </tr>
+                    </thead>
+                    <tbody id="productTableBody">
+                        {{!-- {{#each products}}
+                        <tr>
+                            <td class="image-container text-center">
+                                <img src="{{this.merchandise.imagePath}}" alt="Ảnh sản phẩm" width="100" height="100">
+                            </td>
+                            <td>{{this._id}}</td>
+                            <td> <a href="/user/products/{{this._id}}">{{this.productName}}</a></td>
+                            <td>{{this.manufacturer}}</td>
+                            {{!-- <th>{{this.}}</th> --}}
+                            {{!-- <td>{{this.category}}</td> --}}
+                            {{!-- <td>{{this.createdAt}}</td> --}}
+                            {{!-- <td>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                    data-name="{{this.productName}}" data-id="{{this._id}}"
+                                    onclick="openModal($(this).attr('data-name'), $(this).attr('data-id'))"
+                                    data-bs-target="#deleteProductModal">
+                                    <i class="bx bx-trash"></i></button>
+                                <button type="button" class=" mt-1 btn btn-warning">
+                                    <i class="bx bxs-receipt"></i></button>
+                            </td> --}}
+                        {{!-- </tr> --}}
+                        {{!-- {{/each}} --}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {{!-- <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div> --}}
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+        loadProductListByFiltering();
+    })
+    function loadProductListByFiltering() {
+        $.ajax({
+            url: '/user/api/products',
+            type: 'POST',
+            dataType: "json",
+            data: {
+                "name" : $("#productName").val(),
+                "price" : $("#productPrice").val(),
+                "status" : $("#status").val(),
+                "category" : $("#category").val()
+            },
+            success: function (data) {
+                console.log(data)
+                updateProductList(data);
+            },
+            error: function (err) {
+                console.error(err);
+            }
+        });
+    }
+    function formatCurrency(number) {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(number);
+    }
+    function updateProductList(products) {
+        $('#productTableBody').empty();
+        products.forEach(function(product) {
+            var row = $('<tr>');
+            row.append($('<td>').addClass('text-center').html('<img src="' + product.merchandise.imagePath + '" style="max-height:100px" alt="">'));
+            row.append($('<td>').text(product._id));
+            row.append($('<td>').html('<a href="/user/products/' + product._id + '">' + product.productName + '</a>'));
+            row.append($('<td>').text(formatCurrency(product.merchandise.retailPrice)));
+            row.append($('<td>').text(product.manufacturer));
+            row.append($('<td>').text(product.category));
+            $('#productTableBody').append(row);
+        });
+    }
+    $("#search").on("click", function(){
+        loadProductListByFiltering();
+    })
+</script>

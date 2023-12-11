@@ -1,0 +1,28 @@
+{{!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <script src="https://cdn.rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
+</head>
+<body>
+    <div id="qr-reader" style="width: 600px"></div>
+</body>
+<script>
+    function onScanSuccess(qrCodeMessage) {
+        const decimal = parseInt(qrCodeMessage)
+        console.log(`QR Code scanned: ${decimal.toString(16)}`);
+    }
+
+    function onScanError(errorMessage) {
+        console.error(`QR Code scan error: ${errorMessage}`);
+    }
+
+    var html5QrcodeScanner = new Html5QrcodeScanner(
+        "qr-reader", { fps: 0.2, qrbox: 250 });
+
+    html5QrcodeScanner.render(onScanSuccess, onScanError);
+</script>
+</html> --}}

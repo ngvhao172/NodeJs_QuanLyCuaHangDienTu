@@ -1,0 +1,61 @@
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+  <div class="app-brand demo d-flex justify-content-center">
+    <a href="/user/POS" class="app-brand-link" id="homeIcon">
+      <span class="app-brand-logo demo">
+        <img src="/assets/Logo2.png" alt="" style="height: 65px; width: 110.11px">
+      </span>
+    </a>
+  </div>
+
+  <div class="menu-inner-shadow"></div>
+
+  <ul class="menu-inner py-1">
+    <!-- POS -->
+    <li class="menu-item" id="home">
+      <a href="/user/POS" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-home-circle"></i>
+        <div data-i18n="Analytics">POS Machine</div>
+      </a>
+    </li>
+    <!-- Maneger -->
+    <li class="menu-header small text-uppercase"><span class="menu-header-text">Manage</span></li>
+    <!-- Customer -->
+    <li class="menu-item" id="customers">
+      <a href="/user/customers" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-cube-alt"></i>
+        <div data-i18n="Tables">Customer</div>
+      </a>
+    </li>
+    {{!-- products --}}
+    <li class="menu-item" id="products">
+      <a href="/user/products" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-dock-top"></i>
+        <div data-i18n="Tables">Product</div>
+      </a>
+    </li>
+    {{!-- Statistic --}}
+    <li class="menu-item" id="statistic">
+      <a href="/user/statistic" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-line-chart"></i>
+        <div data-i18n="Tables">Statistic</div>
+      </a>
+    </li>
+    {{!-- Account Manager --}}
+    <li class="menu-header small text-uppercase">
+      <span class="menu-header-text">Account</span>
+    </li>
+    <li class="menu-item" id="profile">
+      <a href="/user/profile" class="menu-link">
+        <i class="menu-icon tf-icons bx bxs-user-account"></i>
+        <div data-i18n="Basic">Profile</div>
+      </a>
+    </li>
+    {{!-- <li class="menu-item">
+      <a href="changepassword" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
+        <div data-i18n="Basic">Change Password</div>
+      </a>
+    </li> --}}
+  </ul>
+
+</aside>

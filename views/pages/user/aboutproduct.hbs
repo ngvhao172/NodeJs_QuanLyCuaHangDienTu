@@ -1,0 +1,183 @@
+<div class="container-fluid">
+	<h4 class="fw-bold my-3">
+		<span class="text-muted fw-light">
+			<a href="/user/products/{{merchandise.productId}}">List Product</a> /
+		</span> {{merchandise.product.productName}}
+	</h4>
+	{{#if messages.message}}
+	<div id="flash-alert" class="alert alert-{{messages.type}} alert-dismissible fade show mt-2" role="alert">
+		<strong>{{messages.type}}!</strong> {{{messages.message}}}
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+	{{/if}}
+	<!-- Breadcrumbs -->
+	<div class="card mb-3">
+		<div class="card-header bg-primary text-white fs-3 p-3">
+			Product Information
+			{{!-- <div class="float-end">
+				<button id="saveButton" type="button" class="btn btn-success" disabled>
+					Save
+				</button>
+				<button id="editButton" type="button" class="btn btn-secondary">
+					Edit
+				</button>
+			</div> --}}
+
+		</div>
+
+		<div class="card-body mt-3">
+			<div class="row">
+				<div class="col-md-4 image-container text-center">
+					<img class="img-fluid" src="{{merchandise.imagePath}}" alt="Ảnh sản phẩm"
+						style="max-width: 300px" />
+				</div>
+				<div class="col-md-8">
+					<form id="productInfo" method="post">
+						<div class="row">
+							<div class="col-md-3">
+								<div>
+									<label for="idProduct"><strong>ID</strong></label>
+									<br />
+									<p class="textValue" id="textId">{{merchandise._id}}</p>
+									<input class="d-none form-control InputValue" type="text" name="merchandiseId"
+										id="merchandiseId" value="{{merchandise._id}}" disabled />
+									<input type="hidden" name="merchandiseId" value="{{merchandise._id}}">
+								</div>
+								<br />
+								<div>
+									<label for="category"><strong>Type of product</strong></label>
+									<br />
+									<p class="textValue" id="textCategory">{{merchandise.product.category}}</p>
+									<input class="d-none form-control InputValue" type="text" name="category"
+										id="category" value="{{merchandise.product.category}}" />
+									{{!-- <select name="category" id="category" class="d-none form-select">
+										<option value="iPhone" selected>iPhone</option>
+										<option value="Tablet">Tablet</option>
+										<option value="Laptop">Laptop</option>
+									</select> --}}
+								</div>
+								<br />
+								<div>
+									<label for="originalPrice"><strong>Import price</strong></label>
+									<br />
+									<p class="textValue" id="textPrice">{{formatCurrency merchandise.importPrice}}</p>
+									<input class="d-none form-control InputValue" type="text" name="importPrice"
+										id="importPrice" value="{{merchandise.importPrice}}" />
+								</div>
+								<br />
+								<div>
+									<label for="amoutProduct"><strong>Quantity</strong></label>
+									<br />
+									<p class="textValue" id="textAmout">{{merchandise.quantity}}</p>
+									<input class="d-none form-control InputValue" type="text" name="quantity"
+										id="quantity" value="{{merchandise.quantity}}" />
+								</div>
+								<div>
+									<label for="amoutProduct"><strong>Storage</strong></label>
+									<br />
+									<p class="textValue" id="textAmout">{{merchandise.storage}}</p>
+									<input class="d-none form-control InputValue" type="text" name="storage"
+										id="storage" value="{{merchandise.storage}}" />
+								</div>
+							</div>
+
+							<div class="col-md-3">
+								{{!-- <div>
+									<label for="nameProduct"><strong>Name</strong></label>
+									<br />
+									<p class="textValue" id="textName">{{merchandise.product.productName}}</p>
+									<input class="d-none form-control InputValue" type="text" name="nameProduct"
+										id="nameProduct" value="iPhone 15" />
+								</div> --}}
+								{{!-- <br /> --}}
+								<div>
+									<label for="nameProduct"><strong>Manufacturer</strong></label>
+									<br />
+									<p class="textValue" id="textName">{{merchandise.product.manufacturer}}</p>
+									<input class="d-none form-control InputValue" type="text" name="manufacturer"
+										id="manufacturer" value="{{merchandise.product.manufacturer}}" />
+								</div>
+								<br />
+								<div>
+									<label for="sellingPriceProduct"><strong>Retail price</strong></label>
+									<br />
+									<p class="textValue" id="textSellingPrice">{{formatCurrency
+										merchandise.retailPrice}}
+									</p>
+									<input class="d-none form-control InputValue" type="text" name="retailPrice"
+										id="retailPrice" value="{{merchandise.retailPrice}}" />
+								</div>
+								<br />
+								<div>
+									<label for="colorProduct"><strong>Color</strong></label>
+									<br />
+									<p class="textValue" id="textColor">{{merchandise.color}}</p>
+									<input class="d-none form-control InputValue" type="text" name="color" id="color"
+										value="{{merchandise.color}}" />
+								</div>
+								<br />
+								<div>
+									<label for="sold"><strong>Sold</strong></label>
+									<br />
+									<p id="textSold">--</p>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="row">
+									<div class="col-6">
+										<div>
+											<label for="statusProduct"><strong>Status</strong></label>
+											<br />
+											<p class="textValue" id="textStatus">{{merchandise.status}}</p>
+											<select name="status" id="statusProduct"
+												class="d-none form-select InputValue">
+												<option value="Đang bán" selected>Đang bán</option>
+												<option value="Ngừng bán">Ngừng bán</option>
+											</select>
+										</div>
+									</div>
+									<div class="col-6">
+										<div>
+											<label for="barcodeProduct"><strong>Barcode</strong></label>
+											<br />
+											<p id="textBarcode"><img src="{{merchandise.barcodeImage}}" class="img-fluid" alt=""></p>
+											{{!-- <input class="d-none form-control" type="text" name="barcodeProduct"
+												id="barcodeProduct" value="||||||||||||||" disabled /> --}}
+										</div>
+									</div>
+								</div>
+
+								<br />
+								<label for="description"><strong>Description</strong></label>
+								<br />
+								<p class="textValue" id="textDescription">
+									{{merchandise.product.description}}
+								</p>
+								<textarea class="d-none form-control InputValue" name="description" id="description"
+									rows="3"> {{merchandise.product.description}}</textarea>
+							</div>
+							<br />
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		{{!-- <div>
+			<h3 class="clickable-heading" data-bs-toggle="collapse" data-bs-target="#expandableSection">
+				<i class="menu-icon tf-icons bx bxs-comment-edit ms-3"></i>Thông tin mở rộng
+			</h3>
+			<hr class="my-3 border-bottom bg-primary">
+			<div id="expandableSection" class="collapse mb-3">
+				<div class="bg-light">
+					<div class="text-center">
+						<h1>Upload ảnh sản phẩm</h1>
+						<p>Để tải và hiển thị nhanh chóng, mỗi hình ảnh đã tải lên có dung lượng tối đa là 500KB. Dung
+							lượng tối
+							đa là 10MB.</p>
+						<input type="file" name="" id="">
+					</div>
+				</div>
+			</div>
+		</div> --}}
+	</div>
+</div>

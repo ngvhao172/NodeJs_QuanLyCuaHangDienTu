@@ -1,0 +1,142 @@
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<h4 class="fw-bold mt-3 ms-4"><span class="text-muted fw-light">Invoice /</span> {{invoice.customer.fullName}}</h4>
+
+<div class="m-4 row">
+	<div class="col" id='printInvoice'>
+		<div class="invoice-title">
+			<div class="row">
+				{{!-- logo --}}
+				<div class="col">
+					<div class="app-brand justify-content-center">
+						<a href="" class="app-brand-link gap-2">
+							<span class="app-brand-logo demo">
+								 <img src="/assets/Logo2.png" alt="" style="height: 65px; width: 110.11px">
+							</span>
+							{{!-- <span class="app-brand-text demo text-body fw-bolder">Smart Tech</span> --}}
+						</a>
+					</div>
+				</div>
+			</div>
+			<br>
+			<div class="row">
+				<div class="col-6">
+					<h3><i class="bx bx-money" style="padding-right: 30px;"></i><b>Invoice</b><br>
+						<span class="small">ID Invoice #{{invoice._id}}</span>
+					</h3>
+					<canvas id="barcode" style="width: max-content; height: 80px"></canvas>
+					<script>JsBarcode("#barcode", "{{invoice._id}}");</script>
+				</div>
+				<div class="col-6 text-end">
+					<span class="pull-right hidden-print">
+						<button onclick="printDiv('printInvoice')" class="btn btn-primary"><i class="bx bxs-file"></i>
+							In</button>
+					</span>
+				</div>
+			</div>
+		</div>
+		<hr>
+		<div class="row">
+			<div class="col pb-2">
+				<strong>Store: </strong> SmarTech<br>
+				19, Nguyễn Hữu Thọ, Tân Phong, Q7<br>
+				Phone: 07777777777
+			</div>
+			<div class="col text-right">
+				<strong>Customer: </strong> {{invoice.customer.fullName}}<br>
+				{{invoice.customer.address}}<br>
+				Phone: {{invoice.customer.phoneNumber}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="col pb-2">
+				<strong>Cashier: </strong>{{invoice.employee.fullName}}<br>
+				{{invoice.employee.address}}<br>
+				Phone: {{invoice.employee.phoneNumber}} <br>
+				Note: {{invoice.note}}
+			</div>
+			<div class="col text-right">
+				<div class="pb-2">
+					<strong>Payment method:</strong><br>
+					{{invoice.method}}<br>
+				</div>
+				<div class="pb-4">
+					<strong>Invoice Date:</strong><br>
+					{{formatDate invoice.createdAt}}
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<table class="table table-striped">
+					<thead>
+						<tr class="bg-primary text-white">
+							<td><strong>NO.</strong></td>
+							<td><strong>Name Product</strong></td>
+							<td><strong>Description</strong></td>
+							<td><strong>ProductPrice</strong></td>
+							<td><strong>QTY</strong></td>
+							<td><strong>Subtotal</strong></td>
+						</tr>
+					</thead>
+					<tbody>
+						{{#each invoice.invoiceDetails}}
+						<tr>
+							<td>{{addOneUnit @index}}</td>
+							<td><strong>{{this.productName}}</strong></td>
+							<td>Color: {{this.color}}, Capcity: {{this.storage}}</td>
+							<td>{{formatCurrency this.productPrice}}</td>
+							<td>{{this.quantity}}</td>
+							<td>{{formatCurrency this.total}}</td>
+						</tr>
+						{{/each}}
+						<tr>
+							<td colspan="4"></td>
+							<td><strong>Total</strong></td>
+							<td><strong>{{formatCurrency invoice.totalAmount}}</strong></td>
+						</tr>
+						<tr>
+							<td colspan="4"></td>
+							<td class="text-primary"><strong>Discount</strong></td>
+							{{#if invoice.discount}}
+							<td class="text-primary"><strong>{{formatCurrency invoice.discount}}</strong></td>
+							{{else}}
+							<td class="text-primary"><strong>N/A</strong></td>
+							{{/if}}
+						</tr>
+						
+						<tr>
+							<td colspan="4"></td>
+							<td><strong>Paid</strong></td>
+							<td><strong>{{formatCurrency invoice.moneyGiven}}</strong></td>
+						</tr>
+						<tr>
+							<td colspan="4"></td>
+							<td><strong>Change</strong></td>
+							<td><strong>{{formatCurrency invoice.moneyRefund}}</strong></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-6 indentity">
+				<p>Người bán<br><strong>{{invoice.employee.fullName}}</strong></p>
+			</div>
+			<div class="col-6 text-right identity">
+				<p>Người mua<br><strong>{{invoice.customer.fullName}}</strong></p>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	$(document).ready(()=>{
+		sessionStorage.removeItem("cartItems");
+	})
+	function printDiv(printInvoice) {
+		var printContents = document.getElementById(printInvoice).innerHTML;
+		var originalContents = document.body.innerHTML;
+		document.body.innerHTML = printContents;
+		window.print();
+		document.body.innerHTML = originalContents;
+	}
+</script>

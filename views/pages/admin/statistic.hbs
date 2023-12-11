@@ -1,0 +1,365 @@
+<div class="container-fluid">
+    <h4 class="fw-bold my-3"><span class="text-muted fw-light">Manager /</span> Statistic
+    </h4>
+    <!-- Breadcrumbs -->
+    <div class="row" id="sta-value">
+        <div class="col-lg-3 col-6 mb-4">
+            <div class="card">
+                <div class="card-body p-2">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                        <div class="avatar flex-shrink-0">
+                            <img src="../assets/img/icons/unicons/chart-success.png" alt="chart success"
+                                class="rounded" />
+                        </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-1">Profit</span>
+                    <h3 class="card-title text-nowrap mb-1" id="profitValue"></h3>
+                    <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i>
+                        +72.80%</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6 mb-4">
+            <div class="card">
+                <div class="card-body p-2">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                        <div class="avatar flex-shrink-0">
+                            <img src="../assets/img/icons/unicons/wallet-info.png" alt="Credit Card" class="rounded" />
+                        </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-1">Sales</span>
+                    <h3 class="card-title text-nowrap mb-2" id="salesValue"></h3>
+                    <small class="text-danger fw-semibold"><i class="bx bx-down-arrow-alt"></i>
+                        -14.82%</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6 mb-4">
+            <div class="card">
+                <div class="card-body p-2">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                        <div class="avatar flex-shrink-0">
+                            <img src="../assets/img/icons/unicons/paypal.png" alt="Credit Card" class="rounded" />
+                        </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-1">Number of Orders</span>
+                    <h3 class="card-title text-nowrap mb-2" id="noOrdersValue"></h3>
+                    <small class="text-danger fw-semibold"><i class="bx bx-down-arrow-alt"></i>
+                        -14.82%</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6 mb-4">
+            <div class="card">
+                <div class="card-body  p-2">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                        <div class="avatar flex-shrink-0">
+                            <img src="../assets/img/icons/unicons/cc-primary.png" alt="Credit Card" class="rounded" />
+                        </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-1">Number of Products</span>
+                    <h3 class="card-title text-nowrap mb-1" id="noProductsValue"></h3>
+                    <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i>
+                        +28.14%</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white fs-3 p-3">
+            Statistic
+        </div>
+        <div class="card-body">
+            <div class="row mt-3">
+                <div class="col-md-5">
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <button type="button" name="today" class="btn btn-outline-primary">Today</button>
+                        <button type="button" name="yesterday" class="btn btn-outline-primary">Yesterday</button>
+                        <button type="button" name="week" class="btn btn-outline-primary">Week</button>
+                        <button type="button" name="month" class="btn btn-outline-primary">Month</button>
+                        <button type="button" name="year" class="btn btn-outline-primary">Year</button>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="row d-flex justify-content-center align-items-center">
+                        From
+                        <div class="col-md-5"><input class="form-control" type="date" id="startDate">
+                        </div>
+                        To
+                        <div class="col-md-5"><input class="form-control" type="date" id="endDate">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-primary btn-block" id="search">Search</button>
+                </div>
+            </div>
+            <hr class="my-3 border-bottom bg-primary">
+            <table class="table table-bordered" id="" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th style="width: 30px;"></th>
+                        <th>ID Order</th>
+                        <th>Date</th>
+                        <th>Cashier's Name</th>
+                        <th>Customer's Name</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="invoice-list">
+                    {{!-- {{#each invoices.invoicesList}}
+                    <tr>
+                        <td>
+                            <button class="btn btn-icon border-0"><i class="bx bx-dock-top"></i></button>
+                        </td>
+                        <td>{{this._id}}</td>
+                        <td>{{formatDate this.createdAt}}</td>
+                        <td>{{this.employee.fullName}}</td>
+                        <td>{{this.customer.fullName}}</td>
+                        <td class="font-weight-bold">{{formatCurrency this.totalInvoice}}</td>
+                    <tr class="detail-row" style="display: none;">
+                        <td colspan="9">
+                            <p>Total Quaity: {{this.totalProductInvoice}} | Price: {{formatCurrency this.totalInvoice}}
+                                | Discount: {{this.discount}} | Cost:
+                                {{formatCurrency this.totalHistoryCost}} | Total Profit: {{formatCurrency
+                                this.totalProfitInInvoice}}</p>
+                            <div class="table-responsive mt-3">
+                                <table class="table table-bordered table-hover" id="" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>No.</th>
+                                            <th>ID Product</th>
+                                            <th>Name Product</th>
+                                            <th>Quatity</th>
+                                            <th>Price</th>
+                                            <th>Total Amount</th>
+                                            <th>History Cost</th>
+                                            <th>Profit</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{#each this.invoiceDetails}}
+                                        <tr>
+                                            <td>{{@index}}</td>
+                                            <td>{{this.merchandiseId}}</td>
+                                            <td><a href="aboutproduct">{{this.product.productName}}</a></td>
+                                            <td>{{this.quantity}}</td>
+                                            <td>{{formatCurrency this.product.retailPrice}}</td>
+                                            <td>{{formatCurrency this.total}}</td>
+                                            <td>{{formatCurrency this.product.importPrice}}</td>
+                                            <td>{{formatCurrency this.profitPerProduct}}</td>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                    <tfoot class="bg-primary">
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th class=" text-white">{{this.totalProductInvoice}}</th>
+                                            <th></th>
+                                            <th class=" text-white">{{formatCurrency this.totalInvoice}}</th>
+                                            <th class=" text-white">{{formatCurrency this.totalHistoryCost}}</th>
+                                            <th class=" text-white">{{formatCurrency this.totalProfitInInvoice}}</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    {{/each}} --}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+{{!-- JS --}}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+        loadInvoiceList();
+        attachButtonClickHandlers();
+    });
+
+    function attachButtonClickHandlers() {
+        $("button[name='today']").click(function () {
+            filterInvoices("today");
+        });
+
+        $("button[name='week']").click(function () {
+            filterInvoices("week");
+        });
+
+        $("button[name='month']").click(function () {
+            filterInvoices("month");
+        });
+        $("button[name='yesterday']").click(function () {
+            filterInvoices("yesterday");
+        });
+        $("button[name='year']").click(function () {
+            filterInvoices("year");
+        });
+        $("#search").click(function () {
+            filterInvoices("custom");
+        });
+    }
+
+    function filterInvoices(filterType) {
+        let startDate, endDate;
+
+        if (filterType === "today") {
+            startDate = endDate = new Date().toISOString().slice(0, 10);
+        } else if (filterType === "week") {
+            const today = new Date();
+            startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay()).toISOString().slice(0, 10);
+            endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + (7 - today.getDay())).toISOString().slice(0, 10);
+        } else if (filterType === "month") {
+            const now = new Date();
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            startDate.setDate(startDate.getDate() + 1);
+            startDate = startDate.toISOString().slice(0, 10);
+            endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            endDate.setDate(endDate.getDate() + 1);
+            endDate = endDate.toISOString().slice(0, 10);
+
+        } else if (filterType === "yesterday") {
+            startDate = endDate = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().slice(0, 10);
+        } else if (filterType === "year") {
+            startDate = new Date(new Date().getFullYear(), 0, 1).toLocaleDateString('fr-CA');
+            endDate = new Date(new Date().getFullYear(), 11, 31).toLocaleDateString('fr-CA');
+        } else if (filterType === "custom") {
+            startDate = $("#startDate").val();
+            endDate = $("#endDate").val();
+        }
+        console.log(startDate, endDate);
+        $.ajax({
+            url: '/admin/api/statistic',
+            type: 'POST',
+            data: { startDate: startDate, endDate: endDate },
+            success: function (data) {
+                let invoiceList = data.invoices;
+                getInvoice(invoiceList);
+            },
+            error: function (err) {
+                alert(err.responseJSON.message);
+            }
+        });
+    }
+    function loadInvoiceList() {
+        $.ajax({
+            url: '/admin/api/statistic',
+            type: 'GET',
+            success: function (data) {
+                let invoiceList = data.invoices;
+                getInvoice(invoiceList);
+            },
+            error: function (err) {
+                alert(err.responseJSON.message);
+            }
+        });
+    }
+
+    function getInvoice(invoiceList) {
+        const listOfInvoices = $("#invoice-list");
+        listOfInvoices.empty();
+        if (invoiceList.length > 0) {
+            const lastInvoice = invoiceList[invoiceList.length - 1];
+            $("#profitValue").text(formatCurrency(lastInvoice.totalAllProfit));
+            $("#salesValue").text(formatCurrency(lastInvoice.totalAllSale));
+            $("#noOrdersValue").text(lastInvoice.totaAlllInvoice);
+            $("#noProductsValue").text(lastInvoice.totalAllProduct);
+            invoiceList.forEach(invoice => {
+                const $invoiceRow = $(`
+                <tr>
+                    <td>
+                        <button class="btn btn-icon border-0"><i class="bx bx-dock-top"></i></button>
+                    </td>
+                    <td>${invoice._id}</td>
+                    <td>${invoice.createdAt}</td>
+                    <td>${invoice.employee.fullName}</td>
+                    <td>${invoice.customer.fullName}</td>
+                    <td class="font-weight-bold">${formatCurrency(invoice.totalInvoice)}</td>
+                </tr>
+            `);
+                const $invoiceDetailRow = $(`
+                <tr class="detail-row" style="display: none;">
+                    <td colspan="9">
+                        <p>Total Quality: ${invoice.totalProductInvoice} | Price: ${formatCurrency(invoice.totalInvoice)} | Discount: ${formatCurrency(invoice.discount)} | Cost: ${formatCurrency(invoice.totalHistoryCost)} | Total Profit: ${formatCurrency(invoice.totalProfitInInvoice)}</p>
+                        <div class="table-responsive mt-3">
+                            <table class="table table-bordered table-hover" id="" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>ID Product</th>
+                                        <th>Name Product</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Total Amount</th>
+                                        <th>History Cost</th>
+                                        <th>Profit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                <tfoot class="bg-primary">
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th class="text-white">${invoice.totalProductInvoice}</th>
+                                        <th></th>
+                                        <th class="text-white">${formatCurrency(invoice.totalInvoice)}</th>
+                                        <th class="text-white">${formatCurrency(invoice.totalHistoryCost)}</th>
+                                        <th class="text-white">${formatCurrency(invoice.totalProfitInInvoice)}</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            `);
+
+                listOfInvoices.append($invoiceRow);
+                listOfInvoices.append($invoiceDetailRow);
+
+                $invoiceRow.find(".btn-icon").click(function () {
+                    $invoiceDetailRow.toggle();
+                });
+
+                const $tbody = $invoiceDetailRow.find("tbody");
+                let count = 0;
+                invoice.invoiceDetails.forEach(detail => {
+                    //console.log(detail);
+                    const $detailRow = $(`
+                    <tr> 
+                        <td>${count}</td>
+                        <td>${detail.merchandiseId}</td>
+                        <td><a href="/admin/products/aboutproduct/${detail.merchandiseId}">${detail.product.productName}</a></td>
+                        <td>${detail.quantity}</td>
+                        <td>${formatCurrency(detail.product.retailPrice)}</td>
+                        <td>${formatCurrency(detail.total)}</td>
+                        <td>${formatCurrency(detail.product.importPrice)}</td>
+                        <td>${formatCurrency(detail.profitPerProduct)}</td>
+                    </tr>
+                `);
+                    count++;
+                    $tbody.append($detailRow);
+                });
+            });
+        }
+        else {
+            $("#profitValue").text(formatCurrency(0));
+            $("#salesValue").text(formatCurrency(0));
+            $("#noOrdersValue").text(0);
+            $("#noProductsValue").text(0);
+        }
+    }
+    function formatCurrency(number) {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(number);
+    }
+
+</script>

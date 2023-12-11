@@ -1,0 +1,135 @@
+<div class="container-fluid">
+    <!-- Breadcrumbs -->
+    <h4 class="fw-bold mt-3"><span class="text-muted fw-light"><a href="/admin/employees">Employees</a> /</span> {{this.employee.fullName}}
+    </h4>
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white fs-3 p-3">
+            Employee Information
+        </div>
+        <div class="card-body">
+            <br>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div><img src="{{this.employee.avatar}}" class="img-fluid" alt="ảnh nhân viên"></div>
+                    </div>
+                    <div class="col-md-5">
+                        <div>
+                            <p><strong>Name:</strong> {{this.employee.fullName}}</p>
+                            <p><strong>Phone number:</strong> {{this.employee.phoneNumber}}</p>
+                            <p><strong>Gender:</strong>{{this.employee.gender}}</p>
+                            <p><strong>Address:</strong>{{this.employee.address}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div>
+                            <p><strong>ID:</strong> {{this.employee._id}}</p>
+                            <p><strong>Email:</strong> {{this.employee.userEmail}}</p>
+                            <p><strong>Birthday:</strong> {{formatDate this.employee.dob}}</p>
+                            <p><strong>Username:</strong> {{this.employee.account.userName}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <br>
+
+            <div>
+                <h3 class="clickable-heading" data-bs-toggle="collapse" data-bs-target="#expandableSection">
+                    <i></i>
+                    The sales history
+                </h3>
+                <hr class="my-3 border-bottom bg-primary">
+                <div id="expandableSection" class="collapse mb-3">
+                    <div class="table-responsive mt-3">
+                        <table class="table table-bordered" id="" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th style="width: 30px;"></th>
+                                    {{!-- <th>Mã đơn hàng</th>
+                                    <th>Ngày bán</th>
+                                    <th>Khách hàng</th>
+                                    <th>Tổng tiền</th> --}}
+                                     <th>ID Order</th>
+                                    <th>Date</th>
+                                    <th>Customer's Name</th>
+                                    <th>Total</th>
+                                    <th>Discount</th>
+                                    <th>Paid</th>
+                                    <th>Change</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each employee.invoicesList}}
+                                    <tr>
+                                        <td>
+                                            <button class="btn btn-icon border-0"><i class="bx bx-dock-top"></i></button>
+                                        </td>
+                                        <td>{{this._id}}</td>
+                                        <td>{{formatDate this.createdAt}}</td>
+                                        <td>{{this.customer.fullName}}</td>
+                                        <td class="font-weight-bold">{{formatCurrency totalAmount}}</td>
+                                        <td class="font-weight-bold">{{formatCurrency discount}}</td>
+                                        <td class="font-weight-bold">{{formatCurrency moneyGiven}}</td>
+                                        <td class="font-weight-bold">{{formatCurrency moneyRefund}}</td>
+                                        {{!-- <td><button class="btn btn-danger"><i class="bx bx-trash"></button></i></td> --}}
+                                    <tr class="detail-row" style="display: none;">
+                                    <td colspan="9">
+                                        <p>Chi tiết đơn hàng</p>
+                                        <p>Số lượng sản phẩm: {{totalProduct}} | Tiền hàng: {{formatCurrency totalAmount}} | Giảm giá: {{formatCurrency discount}} | Tổng tiền:
+                                            {{formatCurrency totalAfterDiscount}} | Ghi chú: {{note}}</p>
+
+                                        <div class="table-responsive mt-3">
+                                            <table class="table table-bordered" id="" width="100%" cellspacing="0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>No.</th>
+                                                        <th>ID Product</th>
+                                                        <th>Name Product</th>
+                                                        <th>Quatity</th>
+                                                        <th>Price</th>
+                                                        <th>Total Amount</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    {{#each this.invoiceDetails}}
+                                                    <tr>
+                                                        <td>{{@index}}</td>
+                                                        <td>{{this.merchandiseId}}</td>
+                                                        <td>{{this.product.productName}}</td>
+                                                        <td>{{this.quantity}}</td>
+                                                        <td>{{formatCurrency this.product.retailPrice}}</td>
+                                                        <td>{{formatCurrency this.total}}</td>
+                                                    </tr>
+                                                    {{/each}}
+                                                </tbody>
+                                            </table>
+                                    </td>
+                                </tr>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                        <p class="mt-2">Tổng số đơn hàng: {{employee.totalInvoice}} | Tổng tiền hàng: {{formatCurrency employee.totalAmount}} | Tổng giảm giá: {{formatCurrency employee.totalDiscount}} | Tổng tiền nhận: {{formatCurrency employee.totalSelling}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
+
+{{!-- JS --}}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".btn-icon").click(function () {
+            console.log('click');
+            var row = $(this).closest("tr");
+            var detailRow = row.next(".detail-row");
+            detailRow.toggle();
+        });
+    });
+</script>

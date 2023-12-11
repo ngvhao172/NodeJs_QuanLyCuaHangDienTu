@@ -1,0 +1,141 @@
+<div class="container-fluid">
+    <h4 class="fw-bold my-3"><span class="text-muted fw-light"> <a href="/user/products">Product</a> /</span>
+        {{product.productName}}</h4>
+    {{#if messages.message}}
+    <div id="flash-alert" class="alert alert-{{messages.type}} alert-dismissible fade show mt-2" role="alert">
+        <strong>{{messages.type}}!</strong> {{{messages.message}}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {{/if}}
+
+    <div class="card my-3">
+        <div class="card-header bg-primary text-white fs-4 p-3">
+            <p class="d-inline">List Merchandise</p>
+
+        </div>
+
+        <div class="card-body mt-3">
+            <div class="row">
+                {{!-- <div class="col-md-2">
+                    <input type="text" placeholder="Input ID or name product" class="form-control">
+                </div> --}}
+
+                <div class="col-md-2">
+                    <select name="price" id="merchandisePrice" class="form-select">
+                        <option value="" disabled selected>Price</option>
+                        <option value="lt5000000">&lt; 5.000.000</option>
+                        <option value="lt10000000">&lt; 10.000.000</option>
+                        <option value="lt30000000">&lt; 30.000.000</option>
+                        <option value="gt30000000">&gt; 30.000.000</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <select name="status" id="status" class="form-select">
+                        <option value="" disabled selected>Status</option>
+                        <option value="stocking">Còn hàng</option>
+                        <option value="out-of-stock">Hết hàng</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" id="search" class="btn btn-primary btn-block">Search</button>
+                </div>
+            </div>
+
+            <div class="table-responsive mt-3">
+                <table class="table table-bordered" id="" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Ảnh</th>
+                            <th>Mã Sản Phẩm</th>
+                            <th>Tên Sản Phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Màu sắc</th>
+                            {{!-- <th>Giá gốc</th> --}}
+                            <th>Giá bán</th>
+                            {{!-- <th>Ngày tạo</th> --}}
+                            <th>Mã vạch</th>
+                            {{!-- <th>Tùy chỉnh</th> --}}
+                        </tr>
+                    </thead>
+                    <tbody id="merchandisesTableBody">
+                        {{!-- {{#each merchandises}}
+                        <tr>
+                            <td class="image-container text-center">
+                                <img src="{{this.imagePath}}" alt="Ảnh sản phẩm" width="100" height="100">
+                            </td>
+                            <td>{{this._id}}</td>
+                            <td>
+                                <a href="aboutproduct/{{this._id}}">{{this.product.productName}}</a>
+                            </td>
+                            <td>{{this.quantity}}</td>
+                            <td>{{this.color}}</td>
+                            {{!-- <td>{{formatCurrency this.importPrice}}</td> --}}
+                            {{!-- <td>{{formatCurrency this.retailPrice}}</td> --}}
+                            {{!-- <td>{{this.createdAt}}</td> --}}
+                            {{!-- <td>||||||||||||||</td> --}}
+                            {{!-- <td>
+                                <button type="button" class="btn btn-danger" data-name="{{this.product.productName}}"
+                                    data-id="{{this._id}}"
+                                    onclick="openModal($(this).attr('data-name'), $(this).attr('data-id'))"
+                                    data-bs-toggle="modal" data-bs-target="#deleteMerchandiseModal">
+                                    <i class="bx bx-trash"></i></button>
+                                <button type="button" class=" mt-1 btn btn-warning">
+                                    <i class="bx bxs-receipt"></i></button>
+                            </td> --}}
+                        {{!-- </tr>
+                        {{/each}} --}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+{{!-- 
+        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div> --}}
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+        loadMerchandisesList();
+    })
+    function loadMerchandisesList() {
+            $.ajax({
+                url: '/user/api/merchandises',
+                type: 'POST',
+                dataType: "json",
+                data: {
+                    "productId" : "{{product._id}}",
+                    "price" : $("#merchandisePrice").val(),
+                    "status" : $("#status").val(),
+                },
+                success: function (data) {
+                    console.log(data)
+                    updateMerchandisesTable(data);
+                },
+                error: function (err) {
+                    console.error(err);
+                }
+            });
+         }
+        function formatCurrency(number) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(number);
+        }
+        function updateMerchandisesTable(merchandises) {
+            const tableBody = $('#merchandisesTableBody');
+            tableBody.empty();
+
+            for (const merchandise of merchandises) {
+                const row = $('<tr>');
+                row.append($('<td>').addClass('image-container text-center').html('<img src="' + merchandise.imagePath + '" alt="Ảnh sản phẩm" width="100" height="100">'));
+                row.append($('<td>').text(merchandise._id));
+                row.append($('<td>').html('<a href="aboutproduct/' + merchandise._id + '">' + merchandise.product.productName + '</a>'));
+                row.append($('<td>').text(merchandise.quantity));
+                row.append($('<td>').text(merchandise.color));
+                row.append($('<td>').text(formatCurrency(merchandise.retailPrice)));
+                row.append($('<td>').html('<img src="' + merchandise.barcodeImage + '" alt="">'));
+                tableBody.append(row);
+            }
+        }
+        $("#search").on("click", function(){
+            loadMerchandisesList();
+        })
+</script>

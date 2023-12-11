@@ -1,0 +1,111 @@
+<div class="container-fluid">
+    <h4 class="fw-bold my-3"><span class="text-muted fw-light">Manager /</span> Customers</h4>
+
+    <!-- Page Content -->
+    {{#if messages.message}}
+    <div id="flash-alert" class="alert alert-{{messages.type}} alert-dismissible fade show" role="alert">
+        <strong>{{messages.type}}!</strong> {{{messages.message}}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+        </button>
+        <span aria-hidden="true">&times;</span>
+    </div>
+    {{/if}}
+    <!-- DataTables Example -->
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white fs-4 p-3">
+            List Customer
+        </div>
+
+        <div class="card-body  mt-3">
+            <div class="row">
+                 <div class="col-md-3">
+                    <input type="text" placeholder="Input ID or name customer" id="name" name="name"
+                        class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" placeholder="Phone number" id="phonenumber" name="phonenumber"
+                        class="form-control">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" id="search" class="btn btn-primary btn-block">Search</button>
+                </div>
+            </div>
+
+            <div class="table-responsive mt-3">
+                <table class="table table-bordered" id="" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Phone number</th>
+                            <th>Address</th>
+                            <th>Last purchase</th>
+                            <th>Total last purchase</th>
+                            {{!-- <th>Select</th> --}}
+                        </tr>
+                    </thead>
+                    <tbody id="customersTableBody">
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer small text-muted">Tổng số khách hàng:  <span class="text-danger" id="totalCustomers">{{customers.length}}</span> 
+        {{!-- | Tổng tiền:
+            <span class="text-danger">40.000.000</span> --}}
+        </div>
+    </div>
+
+    <br><br><br>
+</div>
+<script>
+    $(document).ready(function () {
+        loadCustomerListByFiltering();
+    });
+
+    function loadCustomerListByFiltering() {
+        $.ajax({
+            url: '/user/api/customers',
+            type: 'POST',
+            dataType: "json",
+            data: {
+                "name": $("#name").val(),
+                "phonenumber": $("#phonenumber").val(),
+            },
+            success: function (data) {
+                renderCustomerList(data);
+            },
+            error: function (err) {
+                console.error(err);
+            }
+        });
+    }
+    function renderCustomerList(customers) {
+         $("#totalCustomers").text(customers.length)
+
+        $('#customersTableBody').empty();
+
+        customers.forEach((customer) => {
+            var row = $('<tr></tr>');
+            row.append('<td>' + customer._id + '</td>');
+            row.append('<td><a href="/user/aboutcustomer/' + customer._id + '">' + customer.fullName + '</a></td>');
+            row.append('<td>' + (customer.phoneNumber || "") + '</td>');
+            row.append('<td>' + (customer.address || "") + '</td>');
+            row.append('<td>' + (customer.recentlyInvoice.createdAt || "") + '</td>');
+
+            if (customer.recentlyInvoice.totalAmount) {
+                row.append('<td class="font-weight-bold"> ' + formatCurrency(customer.recentlyInvoice.totalAmount) + '</td>');
+            } else {
+                row.append('<td class="font-weight-bold"></td>');
+            }
+            $('#customersTableBody').append(row);
+        });
+    }
+    $("#search").on("click", function () {
+        loadCustomerListByFiltering();
+    })
+    function formatCurrency(number) {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(number);
+    }
+</script>
