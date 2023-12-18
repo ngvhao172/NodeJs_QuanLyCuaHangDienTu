@@ -16,8 +16,8 @@ class MomoPaymentController {
         const orderInfo = "Thanh toán qua ví MoMo";
         const requestType = "captureWallet";
 
-        const redirectUrl = "http://localhost:3000/user/getResultTransaction";
-        const ipnUrl = "http://localhost:3000/user/momo-callback";
+        const redirectUrl = "https://smartech.onrender.com//user/getResultTransaction";
+        const ipnUrl = "https://smartech.onrender.com//user/momo-callback";
         const amount = total; // tổng số tiền
         // const amount = "50000";
         const extraData = invoiceId;
