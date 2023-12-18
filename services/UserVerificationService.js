@@ -41,7 +41,7 @@ class UserVerificationService {
             to: userEmail,
             subject: "Verify Your Email",
             html: `<p>Verify your email address to complete the signup and login into your account.</p>
-                  <p>Press <a href=https://smartech.onrender.com/verify/${_id + "/" + uniqueString}> here </a> to proceed. This link will expire after 1 minute.</p>`,
+                  <p>Press <a href=${currentUrl + "/verify/" + _id + "/" + uniqueString}> here </a> to proceed. This link will expire after 1 minute.</p>`,
         };
 
         try {
@@ -87,7 +87,7 @@ class UserVerificationService {
             to: userEmail,
             subject: "Reset Your Password",
             html: `<p>We've processed your password change request. If it is you who sent this request, click on the link below to change your password.</p>
-            <p>Press <a href=https://smartech.onrender.com/changepassword/${_id + "/" + uniqueString}> here </a> to proceed. </p>`
+            <p>Press <a href=${currentUrl + "/changepassword/" + _id + "/" + uniqueString}> here </a> to proceed. </p>`
         };
 
         const userVerificationData = await this.getUserVerificationByUserId(_id, "ForgotPassword");
