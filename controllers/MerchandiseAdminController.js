@@ -95,7 +95,7 @@ class MerchandiseAdminController {
             if (!retailPrice || retailPrice < 0) {
                 errors.push("Vui lòng nhập giá bán lớn hơn 0.");
             }
-            if (!files.image.originalFilename || files.image.originalFilename == "") {
+            if (!files.image[0].originalFilename || files.image[0].originalFilename == "") {
                 errors.push("Vui lòng thêm ảnh sản phẩm.");
             }
             if (errors.length > 0) {
